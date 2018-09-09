@@ -72,12 +72,13 @@ func newJavaScriptEngine(c *common.Config) (processors.Processor, error) {
 func (f *javaScriptEngine) Run(event *beat.Event) (*beat.Event, error) {
 	var errors []string
 	//	message, _ := event.Fields.GetValue("message")
-
+	// call the JS process function
 	_, er := f.Engine.Call("process", nil, event.Fields)
 	//	fmt.Println(fields)
 	if er != nil {
 		fmt.Println(" error occured ", er)
 	}
+	// convert added fields from JS type to native Go
 	for k, v := range event.Fields {
 		switch v.(type) {
 		case otto.Value:

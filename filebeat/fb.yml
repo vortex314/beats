@@ -10,6 +10,8 @@ processors:
     timestamps: ["Jan _2 15:04:05"]
 - javascript:
     file: "fb.js"
+    
+http.enabled: true
       
 output.console:
   enabled: false
@@ -17,14 +19,18 @@ output.console:
     file: "fb.json"
 output.kafka:
   enabled: true
-  # initial brokers for reading cluster metadata
   hosts: ["192.168.0.163:9092"]
-
-  # message topic selection + partitioning
   topic: 'topic_avro_syslog'
-  partition.round_robin:
-    reachable_only: true
+  version: 0.9
+  compression: none
   compression_level: 0
+  keep_alive: 3
   required_acks: 0
+  client_id: 'filebeat'
   codec.avro:
     file: "fb.json"
+  channel_buffer_size: 1
+    
+  # initial brokers for reading cluster metadata
+#    file: "fb.json"
+# message topic selection + partitioning

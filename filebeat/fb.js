@@ -1,7 +1,7 @@
 		console.log("Javascript engine loaded "); 
 		process = function(fields){
 			fields.message = fields.syslog_message
-//			console.log(JSON.stringify(fields))
+			console.log(JSON.stringify(fields))
 fields.attributes={}
 fields.attributes.text = "just some Javascript code"
 fields.metrics={}

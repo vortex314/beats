@@ -1,3 +1,3 @@
 set -x
 rm -f data/registry
-./filebeat -c fb.yml
+./filebeat -e -c fb.yml
