@@ -11,7 +11,7 @@ It contains :
 -	Javascript engine to do everything you cannot do with grok
 -	AVRO codec to send this in a regular schema to kafka
 
-![The Flow](https://github.com/vortex314/beats/filebeat/docs/filebeat++.png)
+![The Flow](https://github.com/vortex314/beats/blob/master/filebeat/docs/Filebeat%2B%2B.png)
 
 
 [![Travis](https://travis-ci.org/elastic/beats.svg?branch=master)](https://travis-ci.org/elastic/beats)
