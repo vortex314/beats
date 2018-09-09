@@ -12,7 +12,7 @@
 			"name": "eventClass",
 			"type": {
 				"type": "enum",
-				"namespace": "com.ing.log",
+				"namespace": "be.limero.log",
 				"name": "EventClass",
 				"symbols": [
 					"TECH",
@@ -96,7 +96,7 @@
 		{
 			"type": {
 				"type": "enum",
-				"namespace": "com.ing.log",
+				"namespace": "be.limero.log",
 				"name": "LogLevel",
 				"symbols": [
 					"TRACE",
