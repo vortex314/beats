@@ -73,8 +73,8 @@ func (f *javaScriptEngine) Run(event *beat.Event) (*beat.Event, error) {
 	var errors []string
 	//	message, _ := event.Fields.GetValue("message")
 
-	fields, er := f.Engine.Call("process", nil, event.Fields)
-	fmt.Println(fields)
+	_, er := f.Engine.Call("process", nil, event.Fields)
+	//	fmt.Println(fields)
 	if er != nil {
 		fmt.Println(" error occured ", er)
 	}

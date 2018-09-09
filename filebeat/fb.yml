@@ -7,11 +7,24 @@ filebeat.inputs:
 processors:
 - grok:
     patterns: ["%{SYSLOGTIMESTAMP:timestamp} %{SYSLOGHOST:syslog_host} %{DATA:component}(?:\\[%{POSINT:forget}\\])?: %{GREEDYDATA:syslog_message}"]
-    timestamps: ["MMM  d HH:mm:ss", "MMM dd HH:mm:ss"]
+    timestamps: ["Jan _2 15:04:05", "MMM dd HH:mm:ss"]
 - javascript:
     file: "fb.js"
       
 output.console:
+  enabled: false
+  codec.avro:
+    file: "fb.json"
+output.kafka:
   enabled: true
-  codec.json:
-    pretty: true
+  # initial brokers for reading cluster metadata
+  hosts: ["192.168.0.163:9092"]
+
+  # message topic selection + partitioning
+  topic: 'topic_avro_syslog'
+  partition.round_robin:
+    reachable_only: false
+
+  required_acks: 1
+  codec.avro:
+    file: "fb.json"

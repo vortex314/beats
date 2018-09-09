@@ -20,6 +20,7 @@ package actions
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
@@ -28,8 +29,9 @@ import (
 )
 
 type grokPatterns struct {
-	Patterns []string
-	grok     *grok.Grok
+	Patterns   []string
+	Timestamps []string
+	Grok       *grok.Grok
 }
 
 func init() {
@@ -50,17 +52,9 @@ func newGrokPatterns(c *common.Config) (processors.Processor, error) {
 		return nil, fmt.Errorf("fail to unpack the grok_Patterns configuration: %s", err)
 	}
 
-	/* remove read only Patterns */
-	for _, readOnly := range processors.MandatoryExportedFields {
-		for i, field := range config.Patterns {
-			if readOnly == field {
-				config.Patterns = append(config.Patterns[:i], config.Patterns[i+1:]...)
-			}
-		}
-	}
-	g, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
+	grok, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
 
-	f := &grokPatterns{Patterns: config.Patterns, grok: g}
+	f := &grokPatterns{Patterns: config.Patterns, Timestamps: config.Timestamps, Grok: grok}
 	return f, nil
 }
 
@@ -68,18 +62,32 @@ func (f *grokPatterns) Run(event *beat.Event) (*beat.Event, error) {
 
 	var errors []string
 
-	for _, field := range f.Patterns {
-		err := event.Delete(field)
-		if err != nil {
-			errors = append(errors, err.Error())
+	failed := true
+	msg, _ := event.Fields.GetValue("message")
+	message := msg.(string)
+	for _, pattern := range f.Patterns {
+		values, erc := f.Grok.Parse(pattern, message)
+		if erc == nil {
+			failed = false
+			for k, v := range values {
+				if k == "timestamp" {
+					for _, timestamp := range f.Timestamps {
+						t, e := time.Parse(timestamp, v)
+						if e == nil {
+							event.PutValue("timestampType", t)
+							break
+						}
+					}
+				}
+				event.PutValue(k, v)
+			}
+			break
 		}
-
 	}
-	message, _ := event.Fields.GetValue("message")
-	values, _ := f.grok.Parse(f.Patterns[0], message.(string))
-	for k, v := range values {
-		event.PutValue(k, v)
-		//		fmt.Printf("%+15s =>  %s\n", k, v)
+
+	if failed {
+		errors = append(errors, " failed to find matching pattern ")
+		event.PutValue("@errors", strings.Join(errors, ", "))
 	}
 
 	if len(errors) > 0 {

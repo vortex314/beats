@@ -1,0 +1,232 @@
+{
+	"type": "record",
+	"namespace": "be.limero.log",
+	"name": "LogEvent",
+	"fields": [
+		{
+			"name": "schemaVersion",
+			"type": "long",
+			"default": 3
+		},
+				{
+			"name": "eventClass",
+			"type": {
+				"type": "enum",
+				"namespace": "com.ing.log",
+				"name": "EventClass",
+				"symbols": [
+					"TECH",
+					"FUNC",
+					"AUDIT",
+					"SECURITY"
+				]
+			},
+			"default": "TECH"
+		},
+		{
+			"name": "eventType",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"type": "long",
+			"name": "timestamp"
+		},
+		{
+			"name": "message",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "arguments",
+			"aliases": [
+				"messages"
+			],
+			"type": {
+				"type": "array",
+				"items": "string"
+			},
+			"default": [
+			]
+		},
+		{
+			"name": "metrics",
+			"type": {
+				"type": "map",
+				"values": "double"
+			},
+			"default": {
+			}
+		},
+		{
+			"name": "datacenter",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "environment",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "host",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "component",
+			"type": "string",
+			"default": ""
+		},		
+		{
+			"name": "componentVersion",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "logger",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "thread",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"type": {
+				"type": "enum",
+				"namespace": "com.ing.log",
+				"name": "LogLevel",
+				"symbols": [
+					"TRACE",
+					"DEBUG",
+					"INFO",
+					"WARN",
+					"ERROR"
+				]
+			},
+			"name": "level",
+			"default": "INFO"
+		},
+		{
+			"name": "cmdbId",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "user",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "executer",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "requestor",
+			"aliases": [
+				"requester"
+			],
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "userSession",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "requesterSession",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "executerSession",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "traceId",
+			"aliases": [
+				"request_id"
+			],
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "transactionId",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "spanId",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "parentSpanId",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "errorCode",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "errorMessage",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "errorTrail",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "stacktrace",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "attributes",
+			"type": {
+				"type": "map",
+				"values": "string"
+			},
+			"default": {
+			}
+		},
+		{
+			"name": "operation",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "hashKey",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "initVector",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "encrypted",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "confidential",
+			"type": {
+				"type": "map",
+				"values": "string"
+			},
+			"default": {}
+		}
+
+	]
+}
