@@ -74,12 +74,14 @@ func (f *grokPatterns) Run(event *beat.Event) (*beat.Event, error) {
 					for _, timestamp := range f.Timestamps {
 						t, e := time.Parse(timestamp, v)
 						if e == nil {
-							event.PutValue("timestampType", t)
+							fmt.Println(" timestamp ===", t.Unix())
+							event.PutValue("timestamp", t.Unix())
 							break
 						}
 					}
+				} else {
+					event.PutValue(k, v)
 				}
-				event.PutValue(k, v)
 			}
 			break
 		}

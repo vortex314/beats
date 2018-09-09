@@ -78,6 +78,14 @@ func (f *javaScriptEngine) Run(event *beat.Event) (*beat.Event, error) {
 	if er != nil {
 		fmt.Println(" error occured ", er)
 	}
+	for k, v := range event.Fields {
+		switch v.(type) {
+		case otto.Value:
+			val, _ := v.(otto.Value).Export()
+			event.PutValue(k, val)
+		default:
+		}
+	}
 
 	if len(errors) > 0 {
 		return event, fmt.Errorf(strings.Join(errors, ", "))
