@@ -1,0 +1,17 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/syslog
+    
+processors:
+- grok:
+    patterns: ["%{SYSLOGTIMESTAMP:timestamp} %{SYSLOGHOST:syslog_host} %{DATA:component}(?:\\[%{POSINT:forget}\\])?: %{GREEDYDATA:syslog_message}"]
+    timestamps: ["MMM  d HH:mm:ss", "MMM dd HH:mm:ss"]
+- javascript:
+    file: "fb.js"
+      
+output.console:
+  enabled: true
+  codec.json:
+    pretty: true
