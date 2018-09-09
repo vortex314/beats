@@ -19,6 +19,7 @@ package actions
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/elastic/beats/libbeat/beat"
@@ -28,7 +29,8 @@ import (
 )
 
 type javaScriptEngine struct {
-	File string
+	File   string
+	Engine *otto.Otto
 }
 
 func init() {
@@ -47,6 +49,11 @@ func newJavaScriptEngine(c *common.Config) (processors.Processor, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail to unpack the grok_Patterns configuration: %s", err)
 	}
+	buffer, erc := ioutil.ReadFile(config.File)
+	engine, value, _ := otto.Run(string(buffer))
+	if erc != nil {
+		fmt.Println(" error occured ", erc, value)
+	}
 
 	/* remove read only Patterns */
 	/*	for _, readOnly := range processors.MandatoryExportedFields {
@@ -58,27 +65,15 @@ func newJavaScriptEngine(c *common.Config) (processors.Processor, error) {
 		}
 		g, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
 	*/
-	f := &javaScriptEngine{File: config.File}
+	f := &javaScriptEngine{File: config.File, Engine: engine}
 	return f, nil
 }
 
 func (f *javaScriptEngine) Run(event *beat.Event) (*beat.Event, error) {
 	var errors []string
 	//	message, _ := event.Fields.GetValue("message")
-	vm := otto.New()
-	_, err := vm.Run(`
-		abc = 2 + 2;
-		console.log("The value of abc is " + abc); // 4
-		process = function(fields){
-			console.log(JSON.stringify(fields))
-			fields.javascript="running in GO!"
-			return fields
-		}
-	`)
-	if err != nil {
-		fmt.Println(" error occured ", err)
-	}
-	fields, er := vm.Call("process", nil, event.Fields)
+
+	fields, er := f.Engine.Call("process", nil, event.Fields)
 	fmt.Println(fields)
 	if er != nil {
 		fmt.Println(" error occured ", er)
