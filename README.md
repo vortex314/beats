@@ -6,7 +6,7 @@ The filebeat version that does everything to enable local processing before push
 
 It contains :
 
--	grok filter to extract fields from text
+-	grok pattern matching to extract fields from text
 -	timestamp parser to extract time , date in native format
 -	Javascript engine to do everything you cannot do with grok
 -	AVRO codec to send this in a regular schema to kafka
