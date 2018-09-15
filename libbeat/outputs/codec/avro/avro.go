@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/elastic/beats/libbeat/logp"
+
 	"github.com/elastic/go-structform/gotype"
 
 	"github.com/elastic/beats/libbeat/beat"
@@ -38,6 +40,7 @@ type Encoder struct {
 	version     string
 	config      config
 	AvroEncoder *goavro.Codec
+	logger      *logp.Logger
 }
 
 type config struct {
@@ -77,7 +80,7 @@ func New(file, version string) *Encoder {
 
 	e := &Encoder{version: version, config: config{
 		File: file,
-	}, AvroEncoder: avroCodec}
+	}, AvroEncoder: avroCodec, logger: logp.NewLogger("avro-codec")}
 	e.reset()
 	return e
 }
@@ -103,32 +106,34 @@ func (e *Encoder) reset() {
 // Encode serializes a beat event to avro. It adds additional metadata in the
 // `@metadata` namespace.
 func (e *Encoder) Encode(index string, event *beat.Event) ([]byte, error) {
-	fmt.Println(" encoding ", event.Fields)
+	e.logger.Debug(" encoding ", event.Fields)
 
 	e.buf.Reset()
+	/*
+		textual := []byte(`{"timestamp":1000000,"component":"avro","message":"hello world"}`)
 
-	textual := []byte(`{"timestamp":1000000,"component":"avro","message":"hello world"}`)
-
-	// Convert textual Avro data (in Avro JSON format) to native Go form
-	_, _, err := e.AvroEncoder.NativeFromTextual(textual)
-	if err != nil {
-		fmt.Println("NativeFromTextual", err)
-	}
-
+		// Convert textual Avro data (in Avro JSON format) to native Go form
+		_, _, err := e.AvroEncoder.NativeFromTextual(textual)
+		if err != nil {
+			e.logger.Warn("NativeFromTextual", err)
+			return nil, err
+		}
+	*/
 	m := make(map[string]interface{})
 
 	for k, v := range event.Fields {
-		//		fmt.Println(" KV ,", k, v)
 		m[k] = v
 	}
 
 	buf, er := e.AvroEncoder.BinaryFromNative(nil, m)
 	if er != nil {
-		fmt.Println("BinaryFromNative", er)
+		e.logger.Warn("BinaryFromNative", er)
+		return nil, er
 	}
 
-	n, _, _ := e.AvroEncoder.NativeFromBinary(buf)
-
-	fmt.Println(" returning ", n)
+	if e.logger.IsDebug() {
+		n, _, _ := e.AvroEncoder.NativeFromBinary(buf)
+		e.logger.Debug(" returning ", n)
+	}
 	return buf, nil
 }

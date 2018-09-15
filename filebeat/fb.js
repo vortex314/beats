@@ -5,7 +5,7 @@
 fields.attributes={}
 fields.attributes.text = "just some Javascript code"
 fields.metrics={}
-fields.metrics.temp=34.5
+fields.metrics."outside.temperature"=34.5
 			fields.javascript="running in GO!"
 //			var d = new Date(fields.timestamp)
 //			console.log(" date " + d)

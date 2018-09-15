@@ -24,6 +24,7 @@ import (
 
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
+	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/processors"
 	"github.com/vjeantet/grok"
 )
@@ -32,6 +33,7 @@ type grokPatterns struct {
 	Patterns   []string
 	Timestamps []string
 	Grok       *grok.Grok
+	logger     *logp.Logger
 }
 
 func init() {
@@ -54,7 +56,10 @@ func newGrokPatterns(c *common.Config) (processors.Processor, error) {
 
 	grok, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
 
-	f := &grokPatterns{Patterns: config.Patterns, Timestamps: config.Timestamps, Grok: grok}
+	f := &grokPatterns{Patterns: config.Patterns,
+		Timestamps: config.Timestamps,
+		Grok:       grok,
+		logger:     logp.NewLogger("grok-processor")}
 	return f, nil
 }
 
@@ -74,8 +79,8 @@ func (f *grokPatterns) Run(event *beat.Event) (*beat.Event, error) {
 					for _, timestamp := range f.Timestamps {
 						t, e := time.Parse(timestamp, v)
 						if e == nil {
-							fmt.Println(" timestamp ===", t.Unix())
-							event.PutValue("timestamp", t.Unix())
+							//							fmt.Println(" timestamp ===", t.Unix())
+							event.PutValue("timestamp", t.UnixNano()/1000000)
 							break
 						}
 					}
@@ -88,6 +93,7 @@ func (f *grokPatterns) Run(event *beat.Event) (*beat.Event, error) {
 	}
 
 	if failed {
+		f.logger.Warn(" failed to find matching pattern")
 		errors = append(errors, " failed to find matching pattern ")
 		event.PutValue("@errors", strings.Join(errors, ", "))
 	}
