@@ -21,6 +21,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"time"
 
 	"github.com/elastic/beats/libbeat/logp"
 
@@ -121,6 +123,29 @@ func (e *Encoder) Encode(index string, event *beat.Event) ([]byte, error) {
 	*/
 	m := make(map[string]interface{})
 
+	found, _ := event.Fields.HasKey("timestamp")
+	if !found {
+		event.PutValue("timestamp", time.Now().UnixNano()/1000000)
+	}
+
+	hasHost, _ := event.Fields.HasKey("host")
+	if hasHost {
+		valueHost, _ := event.GetValue("host")
+		switch valueHost.(type) {
+		case string: // do nothing it's ok
+			{
+			}
+		default:
+			{
+				hostName, _ := os.Hostname()
+				event.PutValue("host", hostName)
+			}
+		}
+	} else {
+		hostName, _ := os.Hostname()
+		event.PutValue("host", hostName)
+	}
+
 	for k, v := range event.Fields {
 		m[k] = v
 	}
@@ -128,6 +153,7 @@ func (e *Encoder) Encode(index string, event *beat.Event) ([]byte, error) {
 	buf, er := e.AvroEncoder.BinaryFromNative(nil, m)
 	if er != nil {
 		e.logger.Warn("BinaryFromNative", er)
+		e.logger.Warn(" content ", m)
 		return nil, er
 	}
 
