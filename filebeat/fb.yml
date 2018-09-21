@@ -2,14 +2,14 @@ filebeat.inputs:
 - type: log
   enabled: true
   paths:
-    - /var/log/syslog
+    - /home/lieven/filebeat/heartbeat-2.log
     
 processors:
 - grok:
     patterns: ["%{SYSLOGTIMESTAMP:timestamp} %{SYSLOGHOST:host} %{DATA:component}(?:\\[%{POSINT:forget}\\])?: %{GREEDYDATA:syslog_message}"]
     timestamps: ["Jan _2 15:04:05"]
-- javascript:
-    file: "fb.js"
+#- javascript:
+#    file: "fb.js"
     
 http.enabled: true
       

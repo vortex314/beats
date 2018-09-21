@@ -80,7 +80,8 @@ func (f *grokPatterns) Run(event *beat.Event) (*beat.Event, error) {
 						t, e := time.Parse(timestamp, v)
 						if e == nil {
 							//							fmt.Println(" timestamp ===", t.Unix())
-							event.PutValue("timestamp", t.UnixNano()/1000000)
+							//							event.PutValue("timestamp", t.UnixNano()/1000000)
+							event.PutValue("timestamp", t)
 							break
 						}
 					}

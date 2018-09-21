@@ -125,7 +125,8 @@ func (e *Encoder) Encode(index string, event *beat.Event) ([]byte, error) {
 
 	found, _ := event.Fields.HasKey("timestamp")
 	if !found {
-		event.PutValue("timestamp", time.Now().UnixNano()/1000000)
+//		event.PutValue("timestamp", time.Now().UnixNano()/1000000)
+		event.PutValue("timestamp", time.Now())
 	}
 
 	hasHost, _ := event.Fields.HasKey("host")
