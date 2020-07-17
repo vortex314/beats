@@ -1,3 +1,7 @@
+# IMPORTANT UPDATE
+The build was adapted to the latest release 7.8
+[Example](https://github.com/vortex314/superFilebeat/tree/master/README.md)
+
 # Filebeat with grok, javascript , avro schema
 ## The not so lightweight shipper
 [Example](https://github.com/vortex314/beats/tree/master/filebeat/fb.yml)
